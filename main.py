@@ -17,13 +17,11 @@ async def text_message(message: types.Message):
     youtube = YouTube(url)
                 
     if 'https://www.youtube.com/' or 'https://www.youtu.be/' in message:
-        await bot.send_message(chat_id, f'Идёт загрузка видео: {youtube.title}\n'f'С канала: {youtube.author}\nС сылка на канал: {youtube.channel_url}')
-    
-    await bot.send_message(chat_id,'Чтобы скачать видео нажмите /video \
+        await bot.send_message(chat_id,'Чтобы скачать видео нажмите /video \
             \nЧтобы скачать аудио нажмите /audio\
                 \nЧтобы вывести справку нажмите /help')
-         
-    get_text_messages(message)
+
+        await get_text_messages(message)
 
 @dp.message_handler()
 async def get_text_messages(message):
@@ -36,26 +34,28 @@ async def get_text_messages(message):
 
 @dp.message_handler(commands=['video'])
 async def download_video(url, message, bot):
+    await bot.send_message(chat_id, f'Идёт загрузка видео: {youtube.title}\n'f'С канала: {youtube.author}\nСсылка на канал: {youtube.channel_url}')
     chat_id = message.chat.id
     url = message.text
     youtube = YouTube(url)
-    stream = youtube.streams.filter(progressive=True, file_extension='mp4')
-    stream.get_highest_resolution().download('Downloading video', f'{chat_id}')
-    with open(f'Downloading video\{chat_id}', 'rb') as video:
+    stream = youtube.streams.filter(progressive= True, file_extension='mp4')
+    stream.get_highest_resolution().download('Downloading video', f'{youtube.title}')
+    with open(f'Downloading video\{youtube.title}', 'rb') as video:
         await bot.send_video(chat_id, video, caption='Получите и распишитесь')
-        os.remove(f'Downloading video\{chat_id}')
+        os.remove(f'Downloading video\{youtube.title}')
 
 
 @dp.message_handler(commands=['audio'])
 async def download_audio(url, message, bot):
+    await bot.send_message(chat_id, f'Идёт загрузка аудио: {youtube.title}\n'f'С канала: {youtube.author}\nСсылка на канал: {youtube.channel_url}')
     chat_id = message.chat.id
     url = message.text
     youtube = YouTube(url)
-    stream = youtube.streams.filter(progressive=True, file_extension='mp3')
-    stream.get_highest_resolution().download('Downloading audio', f'{chat_id}')
-    with open(f'Downloading audio\{chat_id}', 'rb') as audio:
-        await bot.send_video(chat_id, audio, caption='Получите и распишитесь')
-        os.remove(f'Downloading audio\{chat_id}')
+    stream = youtube.streams.filter(only_audio=True)
+    stream.get_audio_only().download('Downloading audio', f'{youtube.title}')
+    with open(f'Downloading audio\{youtube.title}', 'rb') as audio:
+        await bot.send_audio(chat_id, audio, caption='Получите и распишитесь')
+        os.remove(f'Downloading audio\{youtube.title}')
         
         
 @dp.message_handler(commands=['help'])
