@@ -19,18 +19,9 @@ async def text_message(message: types.Message):
     if 'https://www.youtube.com/' or 'https://www.youtu.be/' in message:
         await bot.send_message(chat_id,'Чтобы скачать видео нажмите /video \
             \nЧтобы скачать аудио нажмите /audio\
-                \nЧтобы вывести справку нажмите /help')
+                \nЧтобы вывести справку нажмите /help \
+                    \nЧтобы начать нажмите /start')
 
-        await get_text_messages(message)
-
-@dp.message_handler()
-async def get_text_messages(message):
-    if message.text == '/video':
-        await download_video(url, message, bot)
-    elif message.text == '/audio':
-        await download_audio(url, message, bot)
-    elif message.text == '/help':
-        await help_message(message)
 
 @dp.message_handler(commands=['video'])
 async def download_video(url, message, bot):
