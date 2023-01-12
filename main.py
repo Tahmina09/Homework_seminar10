@@ -8,10 +8,8 @@ from bot import dp,bot
 @dp.message_handler(commands=['help'])
 async def help_message(message: types.Message):
     chat_id = message.chat.id
-    await bot.send_message(chat_id, '/start -> Запустить бота\n\
-        /help -> Вывести справку\n \
-        /video -> Скачать видео с Youtube\n\
-            /audio -> Скачать аудио из видео Youtube') 
+    await bot.send_message(chat_id, '/start -> Запустить бота\
+        \n/help -> Вывести справку') 
 
 
 @dp.message_handler(commands=['start'])
@@ -26,13 +24,13 @@ async def text_message(message: types.Message):
     youtube = YouTube(url)
                 
     if 'https://www.youtube.com/' or 'https://www.youtu.be/' in message:
+        await bot.send_message(chat_id, f'Идёт загрузка видео: {youtube.title}\n'f'С канала: {youtube.author}\nСсылка на канал: {youtube.channel_url}')
         await download_video(url, message, bot)
+        await bot.send_message(chat_id, f'Идёт загрузка аудио: {youtube.title}\n'f'С канала: {youtube.author}\nСсылка на канал: {youtube.channel_url}')
         await download_audio(url, message, bot)
 
 
-@dp.message_handler(commands=['video'])
 async def download_video(url, message, bot):
-    await bot.send_message(chat_id, f'Идёт загрузка видео: {youtube.title}\n'f'С канала: {youtube.author}\nСсылка на канал: {youtube.channel_url}')
     chat_id = message.chat.id
     url = message.text
     youtube = YouTube(url)
@@ -43,9 +41,7 @@ async def download_video(url, message, bot):
         os.remove(f'Downloading video\{youtube.title}')
 
 
-@dp.message_handler(commands=['audio'])
 async def download_audio(url, message, bot):
-    await bot.send_message(chat_id, f'Идёт загрузка аудио: {youtube.title}\n'f'С канала: {youtube.author}\nСсылка на канал: {youtube.channel_url}')
     chat_id = message.chat.id
     url = message.text
     youtube = YouTube(url)
@@ -54,8 +50,7 @@ async def download_audio(url, message, bot):
     with open(f'Downloading audio\{youtube.title}', 'rb') as audio:
         await bot.send_audio(chat_id, audio, caption='Получите и распишитесь')
         os.remove(f'Downloading audio\{youtube.title}')
-        
-        
+               
 
 if __name__ == '__main__':
     executor.start_polling(dp)
