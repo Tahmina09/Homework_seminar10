@@ -5,6 +5,15 @@ from pytube import *
 import os
 from bot import dp,bot
 
+@dp.message_handler(commands=['help'])
+async def help_message(message: types.Message):
+    chat_id = message.chat.id
+    await bot.send_message(chat_id, '/start -> Запустить бота\n\
+        /help -> Вывести справку\n \
+        /video -> Скачать видео с Youtube\n\
+            /audio -> Скачать аудио из видео Youtube') 
+
+
 @dp.message_handler(commands=['start'])
 async def start_message(message: types.Message):
     chat_id = message.chat.id
@@ -17,10 +26,8 @@ async def text_message(message: types.Message):
     youtube = YouTube(url)
                 
     if 'https://www.youtube.com/' or 'https://www.youtu.be/' in message:
-        await bot.send_message(chat_id,'Чтобы скачать видео нажмите /video \
-            \nЧтобы скачать аудио нажмите /audio\
-                \nЧтобы вывести справку нажмите /help \
-                    \nЧтобы начать нажмите /start')
+        await download_video(url, message, bot)
+        await download_audio(url, message, bot)
 
 
 @dp.message_handler(commands=['video'])
@@ -49,13 +56,6 @@ async def download_audio(url, message, bot):
         os.remove(f'Downloading audio\{youtube.title}')
         
         
-@dp.message_handler(commands=['help'])
-async def help_message(message: types.Message):
-    chat_id = message.chat.id
-    await bot.send_message(chat_id, '/start -> Запустить бота\n\
-        /help -> Вывести справку\n \
-        /video -> Скачать видео с Youtube\n\
-            /audio -> Скачать аудио из видео Youtube') 
 
 if __name__ == '__main__':
     executor.start_polling(dp)
